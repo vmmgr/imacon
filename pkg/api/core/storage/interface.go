@@ -65,14 +65,6 @@ type FileTransfer struct {
 	AllSize     int64
 }
 
-func GetExtensionName(extension uint) string {
-	// デフォルトはqcow2
-	if extension == 1 {
-		return "img"
-	}
-	return "qcow2"
-}
-
 type ResultOne struct {
 	Status  bool    `json:"status"`
 	Error   string  `json:"error"`

@@ -33,7 +33,7 @@ func Delete(storage *storage.Storage) error {
 	return db.Delete(storage).Error
 }
 
-func Update(flags storage.Update, data storage.Storage) error {
+func Update(flags storage.Update, data *storage.Storage) error {
 	db, err := store.ConnectDB()
 	if err != nil {
 		log.Println("database connection error")
