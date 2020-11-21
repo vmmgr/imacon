@@ -3,7 +3,7 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/vmmgr/controller/pkg/api/core/tool/config"
+	"github.com/vmmgr/imacon/pkg/api/core/tool/config"
 	"strconv"
 )
 
