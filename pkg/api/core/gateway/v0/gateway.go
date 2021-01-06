@@ -3,6 +3,7 @@ package v0
 import (
 	"github.com/gin-gonic/gin"
 	storage "github.com/vmmgr/imacon/pkg/api/core/storage/v0"
+	"github.com/vmmgr/imacon/pkg/api/core/tool/config"
 	"log"
 	"net/http"
 	"strconv"
@@ -21,14 +22,16 @@ func ImaConAPI() {
 			//
 			v1.POST("/storage", storage.Add)
 			v1.GET("/storage", storage.GetAll)
-			v1.GET("/storage/:id", storage.Get)
-			v1.GET("/storage/:id", storage.Update)
+			v1.GET("/storage/uuid/:uuid", storage.GetUUID)
+			v1.GET("/storage/id/:id", storage.Get)
+			v1.GET("/storage/name/:name", storage.GetName)
+			v1.PUT("/storage/:id", storage.Update)
 			//Download
 			v1.POST("/download", storage.Download)
 		}
 	}
 
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(8080), router))
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(config.Conf.ImaCon.Port), router))
 }
 
 func cors(c *gin.Context) {

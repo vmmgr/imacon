@@ -6,14 +6,16 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/vmmgr/imacon/pkg/api/core/storage"
 	"github.com/vmmgr/imacon/pkg/api/core/tool/config"
+	"github.com/vmmgr/imacon/pkg/api/core/tool/gen"
 	"github.com/vmmgr/imacon/pkg/api/meta/json"
 	store "github.com/vmmgr/imacon/pkg/api/store/storage/v0"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 func Add(c *gin.Context) {
-	var input storage.Add
+	var input storage.Storage
 
 	err := c.BindJSON(&input)
 	if err != nil {
@@ -21,20 +23,22 @@ func Add(c *gin.Context) {
 		return
 	}
 
-	// FileNameがない場合はErrorを返す
-	if input.FileName != "" {
+	// File Pathがない場合はErrorを返す
+	if input.Path == "" {
 		json.ResponseError(c, http.StatusBadRequest, fmt.Errorf("Error: FileName is blank... "))
 		return
 	}
 
 	// pathの定義
-	path := ""
+	var path string
 
 	for _, tmpConf := range config.Conf.Storage {
 		if tmpConf.Type == input.Type {
-			path = tmpConf.Path + "/" + input.FileName
+			path = tmpConf.Path + "/" + input.Path
 		}
 	}
+
+	log.Println("Path: " + path)
 
 	// typeよりpathが見つからない場合はErrorを返す
 	if path == "" {
@@ -47,11 +51,16 @@ func Add(c *gin.Context) {
 		return
 	}
 
+	uuid, err := gen.GenerateUUID()
+	if err != nil {
+		json.ResponseError(c, http.StatusInternalServerError, err)
+		return
+	}
+
 	// DBに追加
-	if result, err := store.Create(&storage.Storage{
-		GroupID: input.GroupID, Type: input.Type, Path: input.FileName, CloudInit: &[]bool{input.CloudInit}[0],
-		Admin: &[]bool{input.Admin}[0], MinCPU: input.MinCPU, MinMem: input.MinMem, OS: input.OS,
-		Lock: &[]bool{false}[0]}); err != nil {
+	if result, err := store.Create(&storage.Storage{Name: input.Name, UUID: uuid, GroupID: input.GroupID,
+		Type: input.Type, Path: input.Path, CloudInit: input.CloudInit, Admin: input.Admin, MinCPU: input.MinCPU,
+		MinMem: input.MinMem, OS: input.OS, Lock: &[]bool{false}[0]}); err != nil {
 		json.ResponseError(c, http.StatusInternalServerError, err)
 	} else {
 		json.ResponseOK(c, result)
@@ -98,7 +107,51 @@ func Get(c *gin.Context) {
 	if result := store.Get(storage.SearchID, &storage.Storage{Model: gorm.Model{ID: uint(id)}}); result.Err != nil {
 		json.ResponseError(c, http.StatusInternalServerError, result.Err)
 	} else {
-		json.ResponseOK(c, result.Storage)
+		response := result.Storage[0]
+		for _, tmp := range config.Conf.Storage {
+			if tmp.Type == response.Type {
+				response := storage.Get{Path: tmp.Path + "/" + response.Path, CloudInit: *response.CloudInit}
+				json.ResponseOK(c, response)
+				return
+			}
+		}
+		json.ResponseError(c, http.StatusInternalServerError, fmt.Errorf("Not Found: ID "))
+	}
+}
+
+func GetName(c *gin.Context) {
+	name := c.Param("name")
+
+	if result := store.Get(storage.SearchName, &storage.Storage{Name: name}); result.Err != nil {
+		json.ResponseError(c, http.StatusInternalServerError, result.Err)
+	} else {
+		response := result.Storage[0]
+		for _, tmp := range config.Conf.Storage {
+			if tmp.Type == response.Type {
+				response := storage.Get{Path: tmp.Path + "/" + response.Path, CloudInit: *response.CloudInit}
+				json.ResponseOK(c, response)
+				return
+			}
+		}
+		json.ResponseError(c, http.StatusInternalServerError, fmt.Errorf("Not Found: ID "))
+	}
+}
+
+func GetUUID(c *gin.Context) {
+	uuid := c.Param("uuid")
+
+	if result := store.Get(storage.SearchUUID, &storage.Storage{UUID: uuid}); result.Err != nil {
+		json.ResponseError(c, http.StatusInternalServerError, result.Err)
+	} else {
+		response := result.Storage[0]
+		for _, tmp := range config.Conf.Storage {
+			if tmp.Type == response.Type {
+				response := storage.Get{Path: tmp.Path + "/" + response.Path, CloudInit: *response.CloudInit}
+				json.ResponseOK(c, response)
+				return
+			}
+		}
+		json.ResponseError(c, http.StatusInternalServerError, fmt.Errorf("Not Found: ID "))
 	}
 }
 

@@ -1,38 +1,34 @@
 package storage
 
-import "C"
 import "github.com/jinzhu/gorm"
 
 var Broadcast = make(chan FileTransfer)
 
-type Search int
-
 const (
-	SearchID      = Search(C.SearchID)
-	SearchGroupID = Search(C.SearchID)
-	SearchType    = Search(C.SearchType)
-	SearchAdmin   = Search(C.SearchAdmin)
-)
-
-type Update int
-
-const (
-	UpdateGroup = Update(C.SearchUUID)
-	UpdatePath  = Update(C.SearchPath)
-	UpdateAll   = Update(C.SearchID)
+	SearchID      = 1
+	SearchName    = 2
+	SearchUUID    = 3
+	SearchGroupID = 4
+	SearchType    = 5
+	SearchAdmin   = 6
+	UpdateGroup   = 100
+	UpdatePath    = 101
+	UpdateAll     = 102
 )
 
 type Storage struct {
 	gorm.Model
-	GroupID   uint   `json:"group_id"`
-	Type      uint   `json:"type"` //0: ISO 1:Image
-	Path      string `json:"path"` //node側のパス
-	CloudInit *bool  `json:"cloud_init"`
+	GroupID   uint   `json:"group_id"` //0: All 1~: Only Group
+	Type      uint   `json:"type"`     //0: ISO 1:Image
+	Path      string `json:"path"`     //node側のパス
+	UUID      string `json:"uuid"`
+	Name      string `json:"name"`
+	CloudInit *bool  `json:"cloud_init"` //cloud-init対応イメージであるか否か
 	MinCPU    uint   `json:"min_cpu"`
 	MinMem    uint   `json:"min_mem"`
 	OS        string `json:"os"`
-	Admin     *bool  `json:"admin"`
-	Lock      *bool  `json:"lock"` //削除保護
+	Admin     *bool  `json:"admin"` //管理者専用イメージであるか否か
+	Lock      *bool  `json:"lock"`  //削除保護
 }
 
 type Add struct {
@@ -44,6 +40,11 @@ type Add struct {
 	OS        string `json:"os"`
 	CloudInit bool   `json:"cloud_init"`
 	Admin     bool   `json:"admin"`
+}
+
+type Get struct {
+	Path      string `json:"path"`
+	CloudInit bool   `json:"cloudinit"`
 }
 
 type Convert struct {

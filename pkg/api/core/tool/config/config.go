@@ -7,7 +7,7 @@ import (
 
 type Config struct {
 	Controller Controller `json:"controller"`
-	Node       Imacon     `json:"imacon"`
+	ImaCon     ImaCon     `json:"imacon"`
 	DB         DB         `json:"db"`
 	Storage    []Storage  `json:"storage"`
 }
@@ -24,7 +24,7 @@ type Auth struct {
 	Token3 string `json:"token3"`
 }
 
-type Imacon struct {
+type ImaCon struct {
 	Url  string `json:"url"`
 	Port int    `json:"port"`
 }
@@ -43,7 +43,6 @@ type DB struct {
 }
 
 type Storage struct {
-	ID   uint   `json:"id"`
 	Type uint   `json:"type"`
 	Path string `json:"path"`
 }
