@@ -5,11 +5,8 @@ import (
 )
 
 func fileExistsCheck(path string) bool {
-	if _, err := os.Stat(path); err != nil {
-		return false
-	} else {
-		return true
-	}
+	_, err := os.Stat(path)
+	return err == nil
 }
 
 func AddCheck() {

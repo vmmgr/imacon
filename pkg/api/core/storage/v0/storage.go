@@ -46,7 +46,7 @@ func Add(c *gin.Context) {
 		return
 	}
 
-	if fileExistsCheck(path) {
+	if !fileExistsCheck(path) {
 		json.ResponseError(c, http.StatusNotFound, fmt.Errorf("Error: file already exists... "))
 		return
 	}
