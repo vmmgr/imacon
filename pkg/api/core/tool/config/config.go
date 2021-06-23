@@ -6,10 +6,8 @@ import (
 )
 
 type Config struct {
-	Controller Controller `json:"controller"`
-	ImaCon     ImaCon     `json:"imacon"`
-	DB         DB         `json:"db"`
-	Storage    []Storage  `json:"storage"`
+	Controller    Controller `json:"controller"`
+	PublicKeyPath string     `json:"public_key_path"`
 }
 
 type Controller struct {
@@ -22,29 +20,6 @@ type Auth struct {
 	Token1 string `json:"token1"`
 	Token2 string `json:"token2"`
 	Token3 string `json:"token3"`
-}
-
-type ImaCon struct {
-	Url  string `json:"url"`
-	Port int    `json:"port"`
-}
-
-type AdminAuth struct {
-	User string `json:"user"`
-	Pass string `json:"pass"`
-}
-
-type DB struct {
-	IP     string `json:"ip"`
-	Port   int    `json:"port"`
-	User   string `json:"user"`
-	Pass   string `json:"pass"`
-	DBName string `json:"dbName"`
-}
-
-type Storage struct {
-	Type uint   `json:"type"`
-	Path string `json:"path"`
 }
 
 var Conf Config

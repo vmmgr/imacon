@@ -1,6 +1,6 @@
 {
   "controller": {
-    "url": "localhost",
+    "ip": "127.0.0.1",
     "port": 8080,
     "auth": {
       "token1": "1234",
@@ -8,25 +8,5 @@
       "token3": "9012"
     }
   },
-  "db": {
-    "ip": "127.0.0.1",
-    "port": 3306,
-    "user": "yonedayuto",
-    "pass": "Yon199eya9n#",
-    "dbName": "vmmgr_controller"
-  },
-  "imacon": {
-    "url": "localhost",
-    "port": 8082
-  },
-  "storage": [
-    {
-      "type": 0,
-      "path": "/home/yoneyan/iso"
-    },
-    {
-      "type": 1,
-      "path": "/home/yoneyan/image_store"
-    }
-  ]
+  "public_key_path": "/home/user/.ssh/id_rsa"
 }
