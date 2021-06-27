@@ -15,6 +15,14 @@ var copyCmd = &cobra.Command{
 	Short: "start client server",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		confPath, err := cmd.Flags().GetString("config")
+		if err != nil {
+			log.Fatalf("could not greet: %v", err)
+		}
+		if config.GetConfig(confPath) != nil {
+			log.Fatalf("error config process |%v", err)
+		}
+
 		uuid, err := cmd.Flags().GetString("uuid")
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
@@ -70,7 +78,7 @@ var copyCmd = &cobra.Command{
 			log.Println(err)
 			go func() {
 				for {
-					<-time.NewTimer(200 * time.Microsecond).C
+					<-time.NewTimer(10 * time.Second).C
 					err = controller.SendController(url, controllerInt.Controller{UUID: uuid, Error: err.Error()})
 					if err == nil {
 						break
@@ -85,10 +93,11 @@ var copyCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(copyCmd)
+	copyCmd.PersistentFlags().StringP("config", "c", "", "config")
 	copyCmd.PersistentFlags().StringP("uuid", "u", "", "UUID")
-	copyCmd.PersistentFlags().StringP("url", "url", "", "URL")
+	copyCmd.PersistentFlags().StringP("url", "l", "", "URL")
 	copyCmd.PersistentFlags().StringP("src", "s", "", "src path")
 	copyCmd.PersistentFlags().StringP("dst", "d", "", "dst path")
 	copyCmd.PersistentFlags().StringP("addr", "a", "", "dst Addr")
-	copyCmd.PersistentFlags().StringP("user", "u", "", "dst User")
+	copyCmd.PersistentFlags().StringP("user", "r", "", "dst User")
 }

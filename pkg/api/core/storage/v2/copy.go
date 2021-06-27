@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -46,6 +47,12 @@ func Copy(uuid, url, srcPath, dstPath, addr, user, pk string) error {
 	}
 	defer client.Close()
 
+	dstPathArray := strings.Split(dstPath, "/")
+	err = client.MkdirAll(dstPath[:len(dstPath)-(len(dstPathArray))])
+	if err != nil {
+		log.Println(err)
+	}
+
 	// dstFileの作成
 	dstFile, err := client.Create(dstPath)
 	if err != nil {
@@ -69,7 +76,7 @@ func Copy(uuid, url, srcPath, dstPath, addr, user, pk string) error {
 	go func() {
 		for {
 			if p.size != p.total {
-				<-time.NewTimer(200 * time.Microsecond).C
+				<-time.NewTimer(2 * time.Second).C
 				log.Println(p.size)
 				controller.SendController(url, controllerInt.Controller{
 					UUID:     uuid,
